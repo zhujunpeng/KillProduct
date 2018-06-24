@@ -29,7 +29,7 @@ public class SecKillController {
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
 
-	@Resource
+	@Autowired
 	private RedisTemplate<String, SecOrder> redisTemplate;
 
 	/**
@@ -62,11 +62,6 @@ public class SecKillController {
 				+ (2000 - Integer.valueOf(stringRedisTemplate.opsForValue().get("stock" + productId)));
 	}
 
-	/**
-	 * 在redis中刷新某个商品库存
-	 * @param productId
-	 * @return
-	 */
 	@RequestMapping("/refresh/{productId}")
 	public String refreshStock(@PathVariable String productId) {
 		SecProductInfo secProductInfo = secKillService.refreshStock(productId);

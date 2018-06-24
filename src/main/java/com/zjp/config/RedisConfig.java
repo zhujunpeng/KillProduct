@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * 配置RedisTemplate，否则使用默认的RedisTemplate会使key和value乱码。
  * 
+ * 也就是 spring-redis.xml
+ * 
  * @author zjp
  *
  */

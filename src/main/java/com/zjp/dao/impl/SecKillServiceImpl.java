@@ -7,11 +7,14 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.mysql.jdbc.log.Log;
 import com.zjp.bean.SecOrder;
 import com.zjp.bean.SecProductInfo;
 import com.zjp.dao.SecKillService;
@@ -19,8 +22,13 @@ import com.zjp.dao.SecOrderService;
 import com.zjp.exception.SellException;
 import com.zjp.service.RedisLock;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class SecKillServiceImpl implements SecKillService{
+	
+	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private RedisLock redisLock;
@@ -31,12 +39,12 @@ public class SecKillServiceImpl implements SecKillService{
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
 
-	@Resource
+	@Autowired
 	private RedisTemplate<String, SecOrder> redisTemplate;
 
 	private static final int TIMEOUT = 10 * 1000;
 
-	public void orderProductMockDiffUser(String productId, SecOrder secOrder) throws Exception {
+	public long orderProductMockDiffUser(String productId, SecOrder secOrder) throws Exception {
 		// 加锁 setnx
 		long orderSize;
 		long time = System.currentTimeMillis() + TIMEOUT;
@@ -66,12 +74,45 @@ public class SecKillServiceImpl implements SecKillService{
 	                   }
 				}
 			},"therad1").start();
+			new Thread(new Runnable() {
+				
+				public void run() {
+					for (int i = memberList.size() /4; i <memberList.size() /2 ; i++) {
+	                       secOrderService.save(memberList.get(i));
+	                       countDownLatch.countDown();
+	                   }
+				}
+			},"therad2").start();
+			new Thread(new Runnable() {
+				
+				public void run() {
+					for (int i = memberList.size() /2; i <memberList.size()*3/4 ; i++) {
+	                       secOrderService.save(memberList.get(i));
+	                       countDownLatch.countDown();
+	                   }
+				}
+			},"therad3").start();
+			new Thread(new Runnable() {
+				
+				public void run() {
+					for (int i = memberList.size() *3/4; i <memberList.size() ; i++) {
+	                       secOrderService.save(memberList.get(i));
+	                       countDownLatch.countDown();
+	                   }
+				}
+			},"therad4").start();
+			countDownLatch.await();
+			log.info("订单持久化成功~~");
 		}
+		// 释放锁
+		redisLock.unlock(productId, String.valueOf(time));
+		return orderSize;
 	}
-
+	/**
+	 * 刷新某一个商品的
+	 */
 	public SecProductInfo refreshStock(String productId) {
-		// TODO Auto-generated method stub
-		return null;
+		return redisLock.refreshStock(productId);
 	}
 
 }

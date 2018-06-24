@@ -13,7 +13,7 @@ public interface SecKillService {
 	 * @param secOrder
 	 * @throws Exception 
 	 */
-	public void orderProductMockDiffUser(String productId, SecOrder secOrder) throws Exception;
+	public long orderProductMockDiffUser(String productId, SecOrder secOrder) throws Exception;
 
 	/**
 	 * 在redis中刷新库存
