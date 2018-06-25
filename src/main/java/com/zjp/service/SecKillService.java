@@ -1,9 +1,10 @@
-package com.zjp.dao;
+package com.zjp.service;
 
 import org.springframework.stereotype.Service;
 
 import com.zjp.bean.SecOrder;
 import com.zjp.bean.SecProductInfo;
+import com.zjp.exception.SellException;
 
 public interface SecKillService {
 
@@ -19,8 +20,9 @@ public interface SecKillService {
 	 * 在redis中刷新库存
 	 * @param productId
 	 * @return
+	 * @throws SellException 
 	 */
-	public SecProductInfo refreshStock(String productId);
+	public SecProductInfo refreshStock(String productId) throws SellException;
 		
 
 }

@@ -1,0 +1,14 @@
+<!DOCTYPE mapper  
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+  
+<mapper namespace="com.zjp.mapper.SecOrderMapper">
+    
+    <insert id="save" parameterType="SecOrderMapper">
+     	insert into sec_order (userId,productId,productPrice,amount) values(#{userId},#{productId},#{productPrice},#{amount})  
+    </insert>  
+	<select id="findByProductId" parameterType="java.lang.String">
+		select * from sec_order where productId = #{0} 
+	</select>
+  
+</mapper>  

@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zjp.bean.ProductInfo;
 import com.zjp.bean.SecOrder;
 import com.zjp.bean.SecProductInfo;
-import com.zjp.dao.SecKillService;
+import com.zjp.exception.SellException;
+import com.zjp.service.SecKillService;
 import com.zjp.util.SecUtils;
 
 @RestController
@@ -63,7 +64,7 @@ public class SecKillController {
 	}
 
 	@RequestMapping("/refresh/{productId}")
-	public String refreshStock(@PathVariable String productId) {
+	public String refreshStock(@PathVariable String productId) throws SellException {
 		SecProductInfo secProductInfo = secKillService.refreshStock(productId);
 		return "库存id为 "+productId +" <br>  库存总量为 "+secProductInfo.getStock();
 	}

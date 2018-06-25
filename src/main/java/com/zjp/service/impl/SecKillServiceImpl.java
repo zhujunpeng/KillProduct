@@ -1,4 +1,4 @@
-package com.zjp.dao.impl;
+package com.zjp.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +17,12 @@ import org.springframework.stereotype.Service;
 import com.mysql.jdbc.log.Log;
 import com.zjp.bean.SecOrder;
 import com.zjp.bean.SecProductInfo;
-import com.zjp.dao.SecKillService;
-import com.zjp.dao.SecOrderService;
 import com.zjp.exception.SellException;
+import com.zjp.mapper.SecOrderMapper;
 import com.zjp.service.RedisLock;
-
-import lombok.extern.slf4j.Slf4j;
+import com.zjp.service.SecKillService;
 
 @Service
-@Slf4j
 public class SecKillServiceImpl implements SecKillService{
 	
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -34,7 +31,7 @@ public class SecKillServiceImpl implements SecKillService{
 	private RedisLock redisLock;
 	
 	@Autowired
-	private SecOrderService secOrderService;
+	private SecOrderMapper secOrderService;
 
 	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
@@ -44,10 +41,14 @@ public class SecKillServiceImpl implements SecKillService{
 
 	private static final int TIMEOUT = 10 * 1000;
 
+	/**
+	 * 将订单信息保存到redis中
+	 */
 	public long orderProductMockDiffUser(String productId, SecOrder secOrder) throws Exception {
 		// 加锁 setnx
 		long orderSize;
 		long time = System.currentTimeMillis() + TIMEOUT;
+		// 存在请求堵塞在这里
 		boolean lock = redisLock.lock(productId, String.valueOf(time));
 		if (!lock) {
 			throw new SellException(200, "哎呦喂，人太多了");
@@ -110,8 +111,9 @@ public class SecKillServiceImpl implements SecKillService{
 	}
 	/**
 	 * 刷新某一个商品的
+	 * @throws SellException 
 	 */
-	public SecProductInfo refreshStock(String productId) {
+	public SecProductInfo refreshStock(String productId) throws SellException {
 		return redisLock.refreshStock(productId);
 	}
 

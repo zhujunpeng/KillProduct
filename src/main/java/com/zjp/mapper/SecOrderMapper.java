@@ -1,10 +1,13 @@
-package com.zjp.dao;
+package com.zjp.mapper;
 
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import com.zjp.bean.SecOrder;
 
-public interface SecOrderService {
+@Repository
+public interface SecOrderMapper {
 
 	List<SecOrder> findByProductId(String productId);
 

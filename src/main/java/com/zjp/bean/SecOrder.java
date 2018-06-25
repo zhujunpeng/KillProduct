@@ -10,7 +10,9 @@ public class SecOrder implements Serializable{
 	private static final long serialVersionUID = 2455321305223045449L;
 	private String id;
 	private String userId;
+	// 商品id
 	private String productId;
+	// 商品价格
 	private BigDecimal  productPrice;
 	private BigDecimal  amount;
 	

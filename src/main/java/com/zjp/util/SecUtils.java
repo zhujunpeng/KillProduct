@@ -22,7 +22,7 @@ public class SecUtils {
 	}
 
 	/**
-	 * 支付。。。
+	 * 支付，随机支付是否成功
 	 * @return
 	 */
 	public static boolean dummyPay() {
